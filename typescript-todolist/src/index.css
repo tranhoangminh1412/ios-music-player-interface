@@ -1,0 +1,205 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@import url("https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap");
+
+body {
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen",
+    "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue",
+    sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+code {
+  font-family: source-code-pro, Menlo, Monaco, Consolas, "Courier New",
+    monospace;
+}
+
+.content {
+}
+
+.screen {
+  width: 430px;
+  height: 932px;
+  border-radius: 30px;
+  background: #430020;
+  box-shadow: 8px 8px 24px 0px #00000080;
+  padding-right: 2px;
+  padding-left: 2px;
+  position: relative;
+}
+
+.header-box {
+  gap: 75px;
+  display: flex;
+  padding: 45px 25px;
+  align-items: center;
+}
+
+.album-name {
+  color: white;
+  width: 147px;
+  height: 30px;
+  top: 50px;
+  left: 141px;
+  font-family: Poppins;
+  font-size: 20px;
+  font-weight: 700;
+  line-height: 30px;
+  letter-spacing: 0em;
+  text-align: left;
+}
+
+.ellipse-container {
+  padding: 10px 80px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+}
+
+.ellipse-1 {
+  width: 270px;
+  height: 270px;
+  top: 127px;
+  left: 80px;
+  background: white;
+  opacity: 0.2;
+  border-radius: 500px;
+  box-shadow: 8px 241px 68px 0px #270c1900;
+  z-index: 0;
+  overflow: hidden;
+}
+
+.ellipse-2 {
+  width: 250px;
+  height: 250px;
+  overflow: hidden;
+  border-radius: 500px;
+  z-index: 2;
+  position: absolute;
+  background-size: cover;
+}
+
+.songinfo-container {
+  padding: 24px;
+  display: flex;
+  position: relative;
+  width: -webkit-fill-available;
+}
+
+.songinfo-container-info {
+  display: flex;
+  flex-direction: column;
+}
+
+.songinfo-name {
+  width: 156px;
+  height: 45px;
+  top: 444px;
+  left: 24px;
+  font-family: Poppins;
+  font-size: 30px;
+  font-weight: 700;
+  line-height: 45px;
+  letter-spacing: 0em;
+  text-align: left;
+  color: white;
+  white-space: nowrap;
+}
+
+.songinfo-author {
+  width: 109px;
+  height: 36px;
+  top: 489px;
+  left: 24px;
+  font-family: Poppins;
+  font-size: 24px;
+  font-weight: 400;
+  line-height: 36px;
+  letter-spacing: 0em;
+  text-align: left;
+  color: white;
+  opacity: 0.5;
+  white-space: nowrap;
+}
+
+.slider-container {
+  display: flex;
+  padding: 22px;
+  align-items: center;
+  justify-content: center;
+}
+
+/* .slider{
+  width: -webkit-fill-available;
+  height: 6px;
+  
+} */
+input[type="range"]::-ms-track {
+  width: -webkit-fill-available;
+  height: 5px;
+  -webkit-appearance: none;
+  /*remove bg colour from the track, we'll use ms-fill-lower and ms-fill-upper instead */
+  background: transparent;
+
+  /*leave room for the larger thumb to overflow with a transparent border */
+  border-color: transparent;
+  border-width: 6px 0;
+
+  /*remove default tick marks*/
+  color: transparent;
+}
+input[type="range"]::-webkit-fill-lower {
+  background: #fea5b0;
+  border-radius: 10px;
+}
+input[type="range"]::-ms-fill-upper {
+  background: #ddd;
+  border-radius: 10px;
+}
+input[type="range"]::-webkit-slider-thumb {
+  border: none;
+  height: 16px;
+  width: 16px;
+  border-radius: 50%;
+  background: #fea5b0;
+}
+input[type="range"]:focus::-ms-fill-lower {
+  background: #fea5b0;
+}
+input[type="range"]:focus::-ms-fill-upper {
+  background: #ddd;
+}
+.container-time {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.time-text {
+  width: 35px;
+  height: 30px;
+  font-family: Poppins;
+  font-size: 20px;
+  font-weight: 500;
+  line-height: 30px;
+  letter-spacing: 0em;
+  text-align: left;
+  color: #fea5b080;
+}
+
+.action-container {
+  align-items: center;
+  gap: 20px;
+  display: flex;
+  justify-content: center;
+}
+
+.action-button{
+  cursor: pointer;
+}
