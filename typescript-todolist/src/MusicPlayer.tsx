@@ -5,28 +5,17 @@ import heart from "./assets/heart.svg";
 import Songs from "./Songs";
 import ProgressBar from "./ProgressBar";
 import PlaybackAction from "./PlaybackAction";
-import "./assets/Ellipse.svg"
+import "./assets/Ellipse.svg";
 import { useRef, useState, useEffect } from "react";
 
-const originalQueue = [...Songs]
+const originalQueue = [...Songs];
 
 function MusicPlayer() {
-  const [currentTrack, setCurrentTrack] = useState(0);
   const [totalSeconds, setTotalSeconds] = useState(0);
   const [isPlaying, setPlaying] = useState(false);
-  const [queue,setQueue] = useState([...originalQueue])
+  const [queue, setQueue] = useState([...originalQueue.slice(1)]);
   const progressBarRef = useRef<HTMLInputElement>(null);
-
-  useEffect(() => {
-    // Calculate total duration of the song in seconds
-    const getTotalSeconds = (duration: string): number => {
-      const [minutes, seconds] = duration.split(":").map(Number);
-      return minutes * 60 + seconds;
-    };
-
-    // Set total duration of the song in seconds
-    setTotalSeconds(getTotalSeconds(queue[currentTrack].duration));
-  }, []);
+  const [currentTrack, setCurrentTrack] = useState(originalQueue[0]);
 
   return (
     <div className="screen">
@@ -37,12 +26,17 @@ function MusicPlayer() {
       </div>
       <div className="ellipse-container">
         <div className="ellipse-1"></div>
-        <img className="ellipse-2" src={queue[currentTrack].photo} alt="" />
+        <img
+          id="albumcover"
+          className={isPlaying ? "ellipse-2-spin" : "ellipse-2"}
+          src={currentTrack.photo}
+          alt=""
+        />
       </div>
       <div className="songinfo-container">
         <div className="songinfo-container-info">
-          <div className="songinfo-name">{queue[currentTrack].song}</div>
-          <div className="songinfo-author">{queue[currentTrack].author}</div>
+          <div className="songinfo-name">{currentTrack.song}</div>
+          <div className="songinfo-author">{currentTrack.author}</div>
         </div>
         <img
           style={{ position: "absolute", top: "40px", right: "24px" }}
@@ -59,6 +53,7 @@ function MusicPlayer() {
         setPlaying={setPlaying}
         queue={queue}
         setQueue={setQueue}
+        setTotalSeconds={setTotalSeconds}
       />
     </div>
   );

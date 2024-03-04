@@ -1,32 +1,57 @@
 import React, { SetStateAction } from "react";
 import { useState, useEffect } from "react";
 import PlaybackAction from "./PlaybackAction";
+import Songs from "./Songs";
+import { time } from "console";
 
-type ProgressBarProps = {
-  currentTrack: number;
-  progressBarRef: React.RefObject<HTMLInputElement>;
-  totalSeconds: number;
-  setCurrentTrack: React.Dispatch<SetStateAction<number>>;
-  isPlaying: boolean;
-  setPlaying: React.Dispatch<React.SetStateAction<boolean>>;
-  queue: {
+type currentTrackT = {
+  id: number;
+  photo: string;
+  song: string;
+  author: string;
+  duration: string;
+};
+
+type setCurrentTrackT = React.Dispatch<
+  React.SetStateAction<{
     id: number;
     photo: string;
     song: string;
     author: string;
     duration: string;
-  }[];
-  setQueue: React.Dispatch<
-    React.SetStateAction<
-      {
-        id: number;
-        photo: string;
-        song: string;
-        author: string;
-        duration: string;
-      }[]
-    >
-  >;
+  }>
+>;
+
+type queueT = {
+  id: number;
+  photo: string;
+  song: string;
+  author: string;
+  duration: string;
+}[];
+
+type setQueueT = React.Dispatch<
+  React.SetStateAction<
+    {
+      id: number;
+      photo: string;
+      song: string;
+      author: string;
+      duration: string;
+    }[]
+  >
+>;
+
+type ProgressBarProps = {
+  currentTrack: currentTrackT;
+  progressBarRef: React.RefObject<HTMLInputElement>;
+  totalSeconds: number;
+  setCurrentTrack: setCurrentTrackT;
+  isPlaying: boolean;
+  setPlaying: React.Dispatch<React.SetStateAction<boolean>>;
+  queue: queueT;
+  setQueue: setQueueT;
+  setTotalSeconds: React.Dispatch<React.SetStateAction<number>>;
 };
 
 function ProgressBar({
@@ -38,31 +63,47 @@ function ProgressBar({
   setPlaying,
   queue,
   setQueue,
+  setTotalSeconds,
 }: ProgressBarProps) {
-  const currentSong = queue[currentTrack];
+  const currentSong = currentTrack;
   const [timeElapsed, setTimeElapsed] = useState(0);
+  const [repeat,setRepeat] = useState(false);
 
-  useEffect(() => {
-    const timer = setInterval(() => {
-      if (isPlaying && timeElapsed < totalSeconds) {
-        setTimeElapsed((timeElapsed) => timeElapsed + 1); // Increment current time every second
-      } else if (timeElapsed >= totalSeconds) {
-        setPlaying(false);
-        return () => clearInterval(timer);
-      }
-    }, 1000);
+//   const getTotalSeconds = (duration: string): number => {
+//     const [minutes, seconds] = duration.split(":").map(Number);
+//     setTotalSeconds(minutes * 60 + seconds)
+//     return minutes * 60 + seconds;
+//   };
 
-    return () => {
-      clearInterval(timer);
-    }; // Clean up the interval when component unmounts
-  }, [
-    isPlaying,
-    totalSeconds,
-    timeElapsed,
-    setCurrentTrack,
-    currentTrack,
-    setPlaying,
-  ]);
+//   useEffect(() => {
+//     getTotalSeconds(currentTrack.duration)
+//     const timer = setInterval(() => {
+//       if (isPlaying && timeElapsed < totalSeconds) {
+//         setTimeElapsed((timeElapsed) => timeElapsed + 1); // Increment current time every second
+//       } else if (timeElapsed >= totalSeconds && queue.length != 0) {
+//         setPlaying(false);
+//         setTimeout(() => {
+//           setPlaying(true);
+//         }, 500);
+//         setTimeElapsed(0);
+//         setCurrentTrack(queue[0]);
+//         setQueue(queue.slice(1));
+//         return () => clearInterval(timer);
+//       }
+
+//     }, 1000);
+
+//     return () => {
+//       clearInterval(timer);
+//     }; // Clean up the interval when component unmounts
+//   }, [
+//     isPlaying,
+//     totalSeconds,
+//     timeElapsed,
+//     setCurrentTrack,
+//     currentTrack,
+//     setPlaying,
+//   ]);
 
   const handleProgressChange = () => {
     console.log(progressBarRef.current?.value);
@@ -120,6 +161,9 @@ function ProgressBar({
         setTimeElapsed={setTimeElapsed}
         queue={queue}
         setQueue={setQueue}
+        setTotalSeconds={setTotalSeconds}
+        totalSeconds={totalSeconds}
+        timeElapsed={timeElapsed}
       />
     </>
   );

@@ -3,33 +3,66 @@ import playback from "./assets/playback.svg";
 import Ishuffle from "./assets/shuffle.svg";
 import playforward from "./assets/playforward.svg";
 import Irepeat from "./assets/repeat.svg";
-import React, { SetStateAction, useState } from "react";
+import React, { SetStateAction, useState, useEffect } from "react";
 import Songs from "./Songs";
 
-type PlaybackActionProps = {
-  isPlaying: boolean;
-  setPlaying: React.Dispatch<React.SetStateAction<boolean>>;
-  currentTrack: number;
-  setCurrentTrack: React.Dispatch<SetStateAction<number>>;
-  setTimeElapsed: React.Dispatch<React.SetStateAction<number>>;
-  queue: {
+let rotationAngle = 0;
+let animationDuration = 2;
+
+type currentTrackT = {
+  id: number;
+  photo: string;
+  song: string;
+  author: string;
+  duration: string;
+};
+
+type ShuffleFunctionsT = {
+  shuffleArray: () => void;
+  unShuffle: () => void;
+};
+
+type setCurrentTrackT = React.Dispatch<
+  React.SetStateAction<{
     id: number;
     photo: string;
     song: string;
     author: string;
     duration: string;
-  }[];
-  setQueue: React.Dispatch<
-    React.SetStateAction<
-      {
-        id: number;
-        photo: string;
-        song: string;
-        author: string;
-        duration: string;
-      }[]
-    >
-  >;
+  }>
+>;
+
+type queueT = {
+  id: number;
+  photo: string;
+  song: string;
+  author: string;
+  duration: string;
+}[];
+
+type setQueueT = React.Dispatch<
+  React.SetStateAction<
+    {
+      id: number;
+      photo: string;
+      song: string;
+      author: string;
+      duration: string;
+    }[]
+  >
+>;
+
+type PlaybackActionProps = {
+  isPlaying: boolean;
+  setPlaying: React.Dispatch<React.SetStateAction<boolean>>;
+  currentTrack: currentTrackT;
+  setCurrentTrack: setCurrentTrackT;
+  setTimeElapsed: React.Dispatch<React.SetStateAction<number>>;
+  queue: queueT;
+  setQueue: setQueueT;
+  setTotalSeconds: React.Dispatch<React.SetStateAction<number>>;
+  timeElapsed: number;
+  totalSeconds: number;
 };
 
 function PlaybackAction({
@@ -40,88 +73,137 @@ function PlaybackAction({
   setTimeElapsed,
   queue,
   setQueue,
+  timeElapsed,
+  setTotalSeconds,
+  totalSeconds,
 }: PlaybackActionProps) {
   const [shuffle, setShuffle] = useState(false);
   const [repeat, setRepeat] = useState(false);
+  const [arrayS, setArrayS] = useState([...Songs]);
+  const [objS, setObjS] = useState(Songs[0]);
+  const albumcover = document.getElementById("albumcover") as HTMLImageElement;
 
-  let songArr = [];
-  for (let i = currentTrack; i < songArr.length; i++) {
-    songArr.push(Songs[i]);
+  const getTotalSeconds = (duration: string): number => {
+    const [minutes, seconds] = duration.split(":").map(Number);
+    setTotalSeconds(minutes * 60 + seconds);
+    return minutes * 60 + seconds;
+  };
+
+  function duplicateQueue() {
+    if (!shuffle) {
+      setQueue([...Songs]);
+    } else {
+      setQueue([objS, ...arrayS]);
+    }
   }
 
-  function shuffleArray(
-    array: {
-      id: number;
-      photo: string;
-      song: string;
-      author: string;
-      duration: string;
-    }[],
-    setArray: React.Dispatch<
-      React.SetStateAction<
-        {
-          id: number;
-          photo: string;
-          song: string;
-          author: string;
-          duration: string;
-        }[]
-      >
-    >
-  ) {
-    let currentIndex = array.length,
-      randomIndex;
+  useEffect(() => {
+    if (repeat && queue.length == 0) {
+      duplicateQueue();
+    }
+  }, [repeat, queue, duplicateQueue]);
 
-    let obj = array[currentIndex]
-    let newArr = [...array.slice(currentIndex+1)];
+  useEffect(() => {
+    getTotalSeconds(currentTrack.duration);
+    const timer = setInterval(() => {
+      if (isPlaying && timeElapsed < totalSeconds) {
+        setTimeElapsed((timeElapsed) => timeElapsed + 1); // Increment current time every second
+      } else if (timeElapsed >= totalSeconds && queue.length != 0) {
+        setPlaying(false);
+        setTimeout(() => {
+          setPlaying(true);
+        }, 500);
+        setTimeElapsed(0);
+        setCurrentTrack(queue[0]);
+        setQueue(queue.slice(1));
+        return () => clearInterval(timer);
+      }
+    }, 1000);
 
+    return () => {
+      clearInterval(timer);
+    }; // Clean up the interval when component unmounts
+  }, [
+    isPlaying,
+    totalSeconds,
+    timeElapsed,
+    setCurrentTrack,
+    currentTrack,
+    setPlaying,
+  ]);
+
+  let l: number;
+
+  function shuffleArray() {
+    let arrayWOcurrent = Songs.slice(0, currentTrack.id).concat(
+      Songs.slice(currentTrack.id + 1)
+    );
+    let shuffleArr = [...arrayWOcurrent];
     // While there remain elements to shuffle.
-    while (currentIndex > 0) {
-      // Pick a remaining element.
-      randomIndex = Math.floor(Math.random() * currentIndex);
-      currentIndex--;
-
-      // And swap it with the current element.
-      [newArr[currentIndex], newArr[randomIndex]] = [
-        newArr[randomIndex],
-        newArr[currentIndex],
-      ];
+    console.log("shuffled");
+    for (let i = shuffleArr.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [shuffleArr[i], shuffleArr[j]] = [shuffleArr[j], shuffleArr[i]];
     }
     setShuffle(true);
-    setCurrentTrack(0)
-    setQueue([obj,...newArr]);
+    setArrayS([currentTrack, ...shuffleArr]);
+    setObjS(currentTrack);
+    setQueue([...shuffleArr]);
   }
 
-  function unShuffle(current : number) {
+  function unShuffle() {
     setShuffle(false);
-    setCurrentTrack(queue[current].id)
-    setQueue([...Songs.slice(queue[current].id)])
-    console.log('Current Track Id: ' + queue[current].id)
-    console.log('Queue Now: ' + Songs.slice(queue[current].id))
+    setQueue([...Songs.slice(currentTrack.id + 1)]);
+  }
+
+  function repeatQueue() {
+    setRepeat(true);
+  }
+
+  function unRepeatQueue() {
+    setRepeat(false);
   }
 
   const handleForward = () => {
-    if (currentTrack + 1 == queue.length) {
+    if (!repeat && queue.length == 0) {
+      console.log(queue);
       setTimeElapsed(9999);
+      setPlaying(false);
     } else {
-      setCurrentTrack((currentTrack) => currentTrack + 1);
+      console.log(queue);
+      setCurrentTrack(queue[0]);
+      setQueue(queue.slice(1));
       setTimeElapsed(0);
     }
   };
 
   const handleBack = () => {
-    if (currentTrack == 0) {
+    if (currentTrack.id == 0) {
       setTimeElapsed(0);
-    } else {
-      setCurrentTrack((currentTrack) => currentTrack - 1);
+    } else if (!shuffle) {
+      setQueue([Songs[currentTrack.id], ...queue]);
+      setCurrentTrack(Songs[currentTrack.id - 1]);
+      setTimeElapsed(0);
+    } else if (shuffle && !arrayS.includes(currentTrack)) {
+      l = arrayS.indexOf(currentTrack);
+      setQueue([currentTrack, ...queue]);
+      setCurrentTrack(arrayS[l - 1]);
+      setTimeElapsed(0);
+    } else if (shuffle) {
       setTimeElapsed(0);
     }
+    albumcover.style.animationName = 'none'
+    setTimeout(()=>{
+        albumcover.style.animationName = 'spin'
+    },0)
   };
 
   return (
     <div className="action-container">
       <img
-        onClick={() => shuffle? shuffleArray(queue, setQueue) :  unShuffle(currentTrack)}
+        onClick={() => {
+          !shuffle ? shuffleArray() : unShuffle();
+        }}
         className="action-button"
         style={{ paddingRight: "20px" }}
         src={Ishuffle}
@@ -134,7 +216,13 @@ function PlaybackAction({
         alt=""
       />
       <img
-        onClick={() => setPlaying(!isPlaying)}
+        onClick={() => {
+          if (isPlaying) {
+            setPlaying(false);
+          } else {
+            setPlaying(true);
+          }
+        }}
         className="action-button"
         src={play}
         alt=""
@@ -146,6 +234,9 @@ function PlaybackAction({
         alt=""
       />
       <img
+        onClick={() => {
+          !repeat ? repeatQueue() : unRepeatQueue();
+        }}
         className="action-button"
         style={{ paddingLeft: "20px" }}
         src={Irepeat}

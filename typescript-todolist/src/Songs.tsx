@@ -33,28 +33,28 @@ const Songs = [
         photo: huongduong,
         song: 'Huong Duong',
         author: 'Changg',
-        duration: '2:17'
+        duration: '5:23'
     },
     {
         id: 4,
         photo: tlinh,
         song: 'Kho bau danh roi',
         author: 'Tlinh',
-        duration: '2:17'
+        duration: '1:17'
     },
     {
         id: 5,
         photo: iloveyouso,
         song: 'I love you so',
         author: 'The Walters',
-        duration: '2:17'
+        duration: '3:54'
     },
     {
         id: 6,
         photo: doi,
         song: 'Doi',
         author: '52hz',
-        duration: '2:17'
+        duration: '4:27'
     }
 ]
 
